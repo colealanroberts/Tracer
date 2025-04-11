@@ -13,7 +13,7 @@
 # Installation
 ## Foo
 
-## SPM
+## Swift Package Manager
 
 # Usage
 ```swift
