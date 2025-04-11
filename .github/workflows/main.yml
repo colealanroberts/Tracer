@@ -1,4 +1,4 @@
-name: Build iOS Swift Package
+name: build
 
 on:
   push:
