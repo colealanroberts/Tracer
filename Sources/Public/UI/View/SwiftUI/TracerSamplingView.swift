@@ -1,6 +1,6 @@
 //
-//  FrameRateSamplingView.swift
-//  Frame
+//  TracerSamplingView.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/6/25.
 //
@@ -10,7 +10,7 @@ import SwiftUI
 
 /// A SwiftUI view that relays frame rate samples via closure to the caller.
 /// This `FrameRateSample` array can be used to populate a chart, etc.
-public struct FrameRateSamplingView<Content: View>: View {
+public struct TracerSamplingView<Content: View>: View {
 
     // MARK: - Private Properties
 
@@ -34,7 +34,7 @@ public struct FrameRateSamplingView<Content: View>: View {
             frameSamples: frameSamples,
             memorySamples: memorySamples
         ))
-        .onReceive(Frame.shared.frameRateSamplePublisher) { frameSamples = $0 }
-        .onReceive(Frame.shared.memorySamplePublisher) { memorySamples = $0 }
+        .onReceive(Tracer.shared.frameRateSamplePublisher) { frameSamples = $0 }
+        .onReceive(Tracer.shared.memorySamplePublisher) { memorySamples = $0 }
     }
 }

@@ -1,6 +1,6 @@
 //
-//  FrameSDK.swift
-//  Frame
+//  TracerSDK.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/7/25.
 //
@@ -12,7 +12,7 @@ import Foundation
 ///
 /// Conforming types are expected to be `Observable` and provide real-time frame rate data,
 /// along with lifecycle hooks to begin and end frame monitoring.
-public protocol FrameSDK {
+public protocol TracerSDK {
     var frameRatePublisher: ValuePublisher<Double> { get }
 
     /// An array of `FrameRateSample` objects.
@@ -28,7 +28,7 @@ public protocol FrameSDK {
     var maximumFrameRate: Int { get }
 
     /// Enables configuration of the FrameSDK.
-    func configure(_ configure: (inout FrameConfiguration) -> Void)
+    func configure(_ configure: (inout TracerConfiguration) -> Void)
 
     /// Resets all sampling.
     func resetSampling()

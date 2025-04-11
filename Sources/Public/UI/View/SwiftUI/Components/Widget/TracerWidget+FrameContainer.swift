@@ -1,6 +1,6 @@
 //
-//  FrameWidget+FrameContainer.swift
-//  Frame
+//  TracerWidget+FrameContainer.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/9/25.
 //
@@ -8,14 +8,14 @@
 import Charts
 import SwiftUI
 
-extension FrameWidget {
+extension TracerWidget {
     struct FrameContainer: View {
 
         // MARK: - Public Properties
 
         let isCompact: Bool
         let isShowingOverflowMenu: Bool
-        let style: FrameWidget.Style
+        let style: Style
         let samples: [FrameRateSample]
         let onOverflowMenu: () -> Void
 
@@ -47,7 +47,7 @@ extension FrameWidget {
                 .padding(.trailing, 12)
                 .padding(.leading, 12)
                 .chartXAxis(.hidden)
-                .chartYScale(domain: 0...Frame.shared.maximumFrameRate)
+                .chartYScale(domain: 0...Tracer.shared.maximumFrameRate)
                 .chartYAxis {}
                 .padding(.bottom, 8)
                 .animation(.spring, value: samples)

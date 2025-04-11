@@ -1,13 +1,13 @@
 //
-//  FrameWidget+CloseButton.swift
-//  Frame
+//  TracerWidget+CloseButton.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/9/25.
 //
 
 import SwiftUI
 
-extension FrameWidget {
+extension TracerWidget {
     struct CloseButton: View {
 
         // MARK: - Properties

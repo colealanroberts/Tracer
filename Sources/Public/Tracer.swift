@@ -1,6 +1,6 @@
 //
-//  FrameConstants.swift
-//  Frame
+//  Tracer.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/6/25.
 //
@@ -8,11 +8,11 @@
 import Combine
 import Foundation
 
-public final class Frame: FrameSDK {
+public final class Tracer: TracerSDK {
 
     // MARK: - Singleton
 
-    public static let shared = Frame()
+    public static let shared = Tracer()
 
     // MARK: - Public Properties
 
@@ -36,7 +36,7 @@ public final class Frame: FrameSDK {
 
     // MARK: - Private Properties
 
-    private var configuration: FrameConfiguration
+    private var configuration: TracerConfiguration
     private var displayLinkProvider: DisplayLinkProviding
     private var frameSampleProvider: any FrameSampleProviding
     private let memorySampleProvider: any MemorySampleProviding
@@ -48,7 +48,7 @@ public final class Frame: FrameSDK {
     }
 
     public init(
-        _ configure: (inout FrameConfiguration) -> Void = { _ in }
+        _ configure: (inout TracerConfiguration) -> Void = { _ in }
     ) {
         let displayLinkProvider: DisplayLinkProviding
         #if os(macOS)
@@ -57,7 +57,7 @@ public final class Frame: FrameSDK {
         displayLinkProvider = iOSDisplayLinkProvider()
         #endif
 
-        var configuration = FrameConfiguration(maximumSamples: FrameConstants.maximumSamples)
+        var configuration = TracerConfiguration(maximumSamples: TracerConstants.maximumSamples)
         configure(&configuration)
 
         self.frameSampleProvider = FrameSampleProvider()
@@ -69,7 +69,7 @@ public final class Frame: FrameSDK {
     // MARK: - Public Methods
 
     public func configure(
-        _ configure: (inout FrameConfiguration) -> Void
+        _ configure: (inout TracerConfiguration) -> Void
     ) {
         configure(&configuration)
         frameSampleProvider.maximumSamples = configuration.maximumSamples

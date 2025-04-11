@@ -1,6 +1,6 @@
 //
-//  FrameWidget.swift
-//  Frame
+//  TracerWidget.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/8/25.
 //
@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-public struct FrameWidget: View {
+public struct TracerWidget: View {
 
     // MARK: - Private Properties
 
@@ -111,23 +111,23 @@ public struct FrameWidget: View {
                 name: isCollectingSamples ? "Pause sampling" : "Resume sampling",
                 onTap: {
                     isCollectingSamples.toggle()
-                    Frame.shared.toggleSampling()
+                    Tracer.shared.toggleSampling()
                 }
             ),
             .init(
                 symbolName: "trash",
                 name: "Discard samples",
                 onTap: {
-                    Frame.shared.resetSampling()
+                    Tracer.shared.resetSampling()
                 }
             ),
         ]
     }
 }
 
-// MARK: - FrameWidget+Style
+// MARK: - TracerWidget+Style
 
-extension FrameWidget {
+extension TracerWidget {
     public struct Style {
         /// Defines a bar gradient for the frame graph.
         let frameGraphGradient: LinearGradient

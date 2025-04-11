@@ -1,6 +1,6 @@
 //
 //  SettingsMenu.swift
-//  Frame
+//  Tracer
 //
 //  Created by Cole Roberts on 4/8/25.
 //

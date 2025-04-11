@@ -1,6 +1,6 @@
 //
 //  MemorySampleProvider.swift
-//  Frame
+//  Tracer
 //
 //  Created by Cole Roberts on 4/9/25.
 //
@@ -13,7 +13,7 @@ final class MemorySampleProvider: SampleProvider<MemorySample> & MemorySamplePro
     // MARK: - Override
 
     override func startSampling() {
-        cancellable = Frame.shared.frameRatePublisher
+        cancellable = Tracer.shared.frameRatePublisher
             .filter { [unowned self] _ in self.isRunning }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in

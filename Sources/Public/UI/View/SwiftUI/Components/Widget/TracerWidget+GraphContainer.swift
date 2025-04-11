@@ -1,13 +1,13 @@
 //
-//  FrameWidget+GraphContainer.swift
-//  Frame
+//  TracerWidget+GraphContainer.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/9/25.
 //
 
 import SwiftUI
 
-extension FrameWidget {
+extension TracerWidget {
     struct GraphContainer: View {
 
         // MARK: - Properties
@@ -15,7 +15,7 @@ extension FrameWidget {
         let buffer: SampleBuffer
         let isCompact: Bool
         let isShowingOverflowMenu: Bool
-        let style: FrameWidget.Style
+        let style: Style
         let onOverflowMenu: () -> Void
 
         // MARK: - Body

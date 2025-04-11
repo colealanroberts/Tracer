@@ -1,6 +1,6 @@
 //
 //  SampleProvider.swift
-//  Frame
+//  Tracer
 //
 //  Created by Cole Roberts on 4/9/25.
 //
@@ -15,7 +15,7 @@ class SampleProvider<Value>: Sampler {
 
     var cancellable: AnyCancellable?
     var isRunning: Bool = false
-    var maximumSamples: Int = FrameConstants.maximumSamples
+    var maximumSamples: Int = TracerConstants.maximumSamples
 
     var samplePublisher: ValuePublisher<[Value]> {
         $samples.eraseToAnyPublisher()

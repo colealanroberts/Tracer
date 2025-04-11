@@ -1,6 +1,6 @@
 //
-//  FrameRateSamplingViewModifier.swift
-//  Frame
+//  TracerSamplingViewModifier.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/6/25.
 //
@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A SwiftUI view modifier that relays frame rate samples via closure to the caller.
 /// This `FrameRateSample` array can be used to populate a chart, etc.
-struct FrameSamplingViewModifier<V: View>: ViewModifier {
+struct TracerSamplingViewModifier<V: View>: ViewModifier {
 
     // MARK: - Public Properties
 
@@ -34,7 +34,7 @@ struct FrameSamplingViewModifier<V: View>: ViewModifier {
     func body(content: Content) -> some View {
         content.overlay(alignment: alignment) {
             if isPresented.wrappedValue {
-                FrameRateSamplingView(builder)
+                TracerSamplingView(builder)
                     .transition(
                         .asymmetric(
                             insertion: .scale.combined(with: .opacity),
@@ -47,7 +47,7 @@ struct FrameSamplingViewModifier<V: View>: ViewModifier {
     }
 }
 
-// MARK: - View+FrameRateSamplingViewModifierViewModifier
+// MARK: - View+TracerSamplingViewModifier
 
 extension View {
     /// A utility method to present an overlay with several options.
@@ -56,13 +56,13 @@ extension View {
     /// render a custom chart, etc.
     ///  - isPresented: Whether the overlay is presented.
     ///  - alignment: The current `Alignment` defaulting to `Alignment.bottom`.
-    public func frameSampleOverlay(
+    public func tracerSamplingOverlay(
         isPresented: Binding<Bool>,
         alignment: Alignment = .bottom,
         builder: @escaping (SampleBuffer) -> some View
     ) -> some View {
         modifier(
-            FrameSamplingViewModifier(
+            TracerSamplingViewModifier(
                 isPresented: isPresented,
                 alignment: alignment,
                 builder
@@ -74,15 +74,15 @@ extension View {
     /// - Parameters:
     ///  - isPresented: Whether the overlay is presented.
     ///  - alignment: The current `Alignment` defaulting to `Alignment.bottom`.
-    public func frameWidgetOverlay(
+    public func tracerWidgetOverlay(
         isPresented: Binding<Bool>,
         alignment: Alignment = .bottom
     ) -> some View {
-        frameSampleOverlay(
+        tracerSamplingOverlay(
             isPresented: isPresented,
             alignment: alignment,
             builder: { buffer in
-                FrameWidget(
+                TracerWidget(
                     buffer: buffer,
                     onClose: {
                         isPresented.wrappedValue.toggle()

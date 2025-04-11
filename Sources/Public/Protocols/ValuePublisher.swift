@@ -1,6 +1,6 @@
 //
 //  FrameRateSamplePublisher.swift
-//  Frame
+//  Tracer
 //
 //  Created by Cole Roberts on 4/7/25.
 //

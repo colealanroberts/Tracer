@@ -1,6 +1,6 @@
 //
-//  FrameSamplingViewController.swift
-//  Frame
+//  TracerSamplingViewController.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/7/25.
 //
@@ -9,14 +9,14 @@ import SwiftUI
 
 // MARK: - FrameRateSamplingUIViewController
 
-final class FrameSamplingViewController<Content: View>: HostingController<FrameRateSamplingView<Content>> {
+final class TracerSamplingViewController<Content: View>: HostingController<TracerSamplingView<Content>> {
 
     // MARK: - Init
 
     init(
         @ViewBuilder _ builder: @escaping (SampleBuffer) -> Content
     ) {
-        super.init(rootView: FrameRateSamplingView(builder))
+        super.init(rootView: TracerSamplingView(builder))
     }
     
     @MainActor @preconcurrency required dynamic init?(coder aDecoder: NSCoder) {

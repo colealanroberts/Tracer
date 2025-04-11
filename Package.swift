@@ -3,18 +3,18 @@
 import PackageDescription
 
 let package = Package(
-    name: "Frame",
+    name: "Tracer",
     platforms: [
         .iOS(.v17),
         .macOS(.v14)
     ],
     products: [
         .library(
-            name: "Frame",
-            targets: ["Frame"]
+            name: "Tracer",
+            targets: ["Tracer"]
         ),
     ],
     targets: [
-        .target(name: "Frame")
+        .target(name: "Tracer")
     ]
 )

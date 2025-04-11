@@ -1,13 +1,13 @@
 //
-//  FrameConfiguration.swift
-//  Frame
+//  TracerConfiguration.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/8/25.
 //
 
 import Foundation
 
-public struct FrameConfiguration {
+public struct TracerConfiguration {
     /// The maximum number of samples to collect when
     /// sampling is enabled.
     /// - Note: The default is `30`.

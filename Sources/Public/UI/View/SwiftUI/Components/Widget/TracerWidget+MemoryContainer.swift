@@ -1,6 +1,6 @@
 //
-//  FrameWidget+MemoryContainer.swift
-//  Frame
+//  TracerWidget+MemoryContainer.swift
+//  Tracer
 //
 //  Created by Cole Roberts on 4/9/25.
 //
@@ -8,13 +8,13 @@
 import Charts
 import SwiftUI
 
-extension FrameWidget {
+extension TracerWidget {
     struct MemoryContainer: View {
 
         // MARK: - Public Properties
 
         let isCompact: Bool
-        let style: FrameWidget.Style
+        let style: Style
         let samples: [MemorySample]
 
         // MARK: - Private Properties
