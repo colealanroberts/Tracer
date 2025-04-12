@@ -57,6 +57,7 @@ extension DocumentExplorerView {
             // If we have several, we'll assume the user is trying to share rather than preview.
             guard documentURLs.count == 1, let url = documentURLs.first else { return }
             let previewController = DocumentPreviewViewController(url: url)
+            previewController.modalPresentationStyle = .formSheet
             controller.present(previewController, animated: true)
         }
     }

@@ -108,7 +108,9 @@ public struct TracerWidget: View {
             \.colorScheme,
              .dark
         )
-        .fullScreenCover(isPresented: $viewModel.isShowingDocumentExplorer) {
+        .sheet(
+            isPresented: $viewModel.isShowingDocumentExplorer
+        ) {
             NavigationView {
                 DocumentExplorerView()
                     .toolbar {
