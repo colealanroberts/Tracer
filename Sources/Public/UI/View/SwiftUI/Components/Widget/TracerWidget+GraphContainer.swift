@@ -5,6 +5,7 @@
 //  Created by Cole Roberts on 4/9/25.
 //
 
+import Combine
 import SwiftUI
 
 extension TracerWidget {
@@ -14,25 +15,32 @@ extension TracerWidget {
 
         let buffer: SampleBuffer
         let isCompact: Bool
+        let isRecording: Bool
         let isShowingOverflowMenu: Bool
         let style: Style
+        let tickBinding: Binding<Int>
+        let onRecord: () -> Void
         let onOverflowMenu: () -> Void
 
         // MARK: - Body
 
         var body: some View {
-            VStack(spacing: 0) {
+            VStack(spacing: 4) {
                 MemoryContainer(
                     isCompact: isCompact,
+                    isRecording: isRecording,
                     style: style,
-                    samples: buffer.memorySamples
+                    samples: buffer.memorySamples,
+                    tickBinding: tickBinding
                 )
 
                 FrameContainer(
                     isCompact: isCompact,
+                    isRecording: isRecording,
                     isShowingOverflowMenu: isShowingOverflowMenu,
                     style: style,
                     samples: buffer.frameSamples,
+                    onRecord: onRecord,
                     onOverflowMenu: onOverflowMenu
                 )
             }

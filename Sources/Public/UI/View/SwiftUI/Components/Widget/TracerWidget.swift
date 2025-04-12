@@ -6,25 +6,23 @@
 //
 
 import Charts
+import Combine
 import SwiftUI
 
 public struct TracerWidget: View {
 
+    // MARK: - Public Properties
+
+    let onClose: () -> Void
+
     // MARK: - Private Properties
 
-    @State private var position: CGSize = .zero
-    @State private var isCompact: Bool = false
-    @State private var isCollectingSamples: Bool = true
+    @StateObject private var viewModel = ViewModel()
     @GestureState private var dragOffset: CGSize = .zero
 
-    // MARK: - Internal Properties
+    private let buffer: SampleBuffer
+    private let style: Style
 
-    @State var isShowingOverflowMenu: Bool = false
-
-    let buffer: SampleBuffer
-    let style: Style
-    let onClose: () -> Void
-    
     // MARK: - Init
 
     public init(
@@ -44,17 +42,24 @@ public struct TracerWidget: View {
         ) {
             GraphContainer(
                 buffer: buffer,
-                isCompact: isCompact,
-                isShowingOverflowMenu: isShowingOverflowMenu,
+                isCompact: viewModel.isCompact,
+                isRecording: viewModel.isRecording,
+                isShowingOverflowMenu: viewModel.isShowingOverflowMenu,
                 style: style,
+                tickBinding: $viewModel.tick,
+                onRecord: {
+                    withAnimation {
+                        viewModel.record()
+                    }
+                },
                 onOverflowMenu: {
                     withAnimation {
-                        isShowingOverflowMenu.toggle()
+                        viewModel.isShowingOverflowMenu.toggle()
                     }
                 }
             )
 
-            if isShowingOverflowMenu {
+            if viewModel.isShowingOverflowMenu {
                 SettingsMenu(items: settingsMenuItems())
             }
         }
@@ -62,20 +67,32 @@ public struct TracerWidget: View {
             RoundedRectangle(cornerRadius: 8.0)
         )
         .frame(
-            width: 172
+            width: 192
         )
         .animation(
             .snappy,
-            value: isShowingOverflowMenu
+            value: viewModel.isShowingOverflowMenu
         )
         .overlay(
             alignment: .topLeading
         ) {
-            CloseButton(onClose: onClose)
+            CircularButton(
+                background: .ultraThick,
+                onTap: onClose, {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 8))
+                        .foregroundStyle(.white)
+                }
+            )
+            .offset(
+                x: -8,
+                y: -8
+            )
+            .shadow(radius: 4)
         }
         .offset(
-            x: position.width + dragOffset.width,
-            y: position.height + dragOffset.height
+            x: viewModel.position.width + dragOffset.width,
+            y: viewModel.position.height + dragOffset.height
         )
         .gesture(
             DragGesture()
@@ -83,8 +100,8 @@ public struct TracerWidget: View {
                     state = value.translation
                 }
                 .onEnded {
-                    position.width += $0.translation.width
-                    position.height += $0.translation.height
+                    viewModel.position.width += $0.translation.width
+                    viewModel.position.height += $0.translation.height
                 }
         )
         .environment(
@@ -98,19 +115,19 @@ public struct TracerWidget: View {
     private func settingsMenuItems() -> [SettingsItem] {
         [
             .init(
-                symbolName: isCompact ? "arrow.up.left.and.arrow.down.right" : "arrow.down.right.and.arrow.up.left",
-                name: isCompact ? "Show full" : "Show compact",
+                symbolName: viewModel.isCompact ? "arrow.up.left.and.arrow.down.right" : "arrow.down.right.and.arrow.up.left",
+                name: viewModel.isCompact ? "Show full" : "Show compact",
                 onTap: {
                     withAnimation {
-                        isCompact.toggle()
+                        viewModel.isCompact.toggle()
                     }
                 }
             ),
             .init(
-                symbolName: isCollectingSamples ? "pause" : "play",
-                name: isCollectingSamples ? "Pause sampling" : "Resume sampling",
+                symbolName: viewModel.isCollectingSamples ? "pause" : "play",
+                name: viewModel.isCollectingSamples ? "Pause sampling" : "Resume sampling",
                 onTap: {
-                    isCollectingSamples.toggle()
+                    viewModel.isCollectingSamples.toggle()
                     Tracer.shared.toggleSampling()
                 }
             ),
@@ -163,3 +180,50 @@ extension LinearGradient {
     }
 }
 
+// MARK: - TracerWidget
+
+private extension TracerWidget {
+    final class ViewModel: ObservableObject {
+
+        // MARK: - Public Properties
+
+        @Published var position: CGSize = .zero
+        @Published var isCompact: Bool = false
+        @Published var isCollectingSamples: Bool = true
+        @Published var isRecording: Bool = false
+        @Published var isShowingOverflowMenu: Bool = false
+        @Published var tick: Int = 0
+
+        // MARK: - Private Methods
+
+        private var timer: AnyCancellable?
+
+        // MARK: - Public Methods
+
+        func record() {
+            isShowingOverflowMenu = false
+            isCompact = true
+            isRecording.toggle()
+
+            if isRecording {
+                Tracer.shared.startRecording()
+
+                timer = Timer.publish(
+                    every: 1.0,
+                    on: .main,
+                    in: .common
+                )
+                .autoconnect()
+                .sink { [weak self] _ in
+                    self?.tick += 1
+                }
+            } else {
+                Tracer.shared.stopRecording()
+
+                tick = 0
+                timer?.cancel()
+                timer = nil
+            }
+        }
+    }
+}

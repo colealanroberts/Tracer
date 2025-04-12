@@ -17,20 +17,20 @@ public struct TracerSamplingView<Content: View>: View {
     @State private var frameSamples = [FrameRateSample]()
     @State private var memorySamples = [MemorySample]()
 
-    @ViewBuilder private let builder: (SampleBuffer) -> Content
+    @ViewBuilder private let content: (SampleBuffer) -> Content
 
     // MARK: - Init
 
     public init(
-        @ViewBuilder _ builder: @escaping (SampleBuffer) -> Content
+        @ViewBuilder _ content: @escaping (SampleBuffer) -> Content
     ) {
-        self.builder = builder
+        self.content = content
     }
 
     // MARK: - Body
 
     public var body: some View {
-        builder(.init(
+        content(.init(
             frameSamples: frameSamples,
             memorySamples: memorySamples
         ))

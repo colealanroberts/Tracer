@@ -10,6 +10,18 @@ import Foundation
 
 final class MemorySampleProvider: SampleProvider<MemorySample> & MemorySampleProviding {
 
+    // MARK: - Private Methods
+
+    private let eventWriter: EventWriting
+
+    // MARK: - Init
+
+    init(
+        eventWriter: EventWriting
+    ) {
+        self.eventWriter = eventWriter
+    }
+
     // MARK: - Override
 
     override func startSampling() {
@@ -26,6 +38,12 @@ final class MemorySampleProvider: SampleProvider<MemorySample> & MemorySamplePro
                 )
 
                 append(sample: sample)
+
+                if eventWriter.isRecording {
+                    eventWriter.append(
+                        event: .system(sample: sample)
+                    )
+                }
             }
     }
 

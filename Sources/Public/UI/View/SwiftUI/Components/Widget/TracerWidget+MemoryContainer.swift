@@ -6,6 +6,7 @@
 //
 
 import Charts
+import Combine
 import SwiftUI
 
 extension TracerWidget {
@@ -14,8 +15,10 @@ extension TracerWidget {
         // MARK: - Public Properties
 
         let isCompact: Bool
+        let isRecording: Bool
         let style: Style
         let samples: [MemorySample]
+        let tickBinding: Binding<Int>
 
         // MARK: - Private Properties
 
@@ -45,20 +48,32 @@ extension TracerWidget {
             }
 
             HStack {
-                HStack {
-                    Text("MEM")
-                        .font(.caption2)
-                        .monospaced()
-                        .foregroundColor(.gray)
+                Text("MEM")
+                    .font(.caption2)
+                    .monospaced()
+                    .foregroundColor(.gray)
 
-                    Text(memory.byteString)
-                        .bold()
-                        .font(.caption2)
-                        .monospaced()
-                        .foregroundColor(.white)
-                }
+                Text(memory.byteString)
+                    .bold()
+                    .font(.caption2)
+                    .monospaced()
+                    .foregroundColor(.white)
 
                 Spacer()
+
+                if isRecording {
+                    Text("\(tickBinding.wrappedValue.timeString)")
+                        .monospaced()
+                        .font(.system(size: 10))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .contentTransition(.numericText())
+                        .transaction { t in
+                            t.animation = .bouncy
+                        }
+                        .background(.red, in: Capsule())
+                        .foregroundStyle(.white)
+                }
             }
         }
     }
@@ -78,5 +93,12 @@ private extension Int {
         }
 
         return String(format: "%.1f %@", value, units[unitIndex])
+    }
+
+    var timeString: String {
+        let hours = self / 3_600
+        let minutes = (self % 3_600) / 60
+        let seconds = self % 60
+        return String(format: "%d:%02d:%02d", hours, minutes, seconds)
     }
 }

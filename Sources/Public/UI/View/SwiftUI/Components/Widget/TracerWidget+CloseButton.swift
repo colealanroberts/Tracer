@@ -8,25 +8,41 @@
 import SwiftUI
 
 extension TracerWidget {
-    struct CloseButton: View {
+    struct CircularButton<Content: View>: View {
 
         // MARK: - Properties
 
-        let onClose: () -> Void
+        /// The background - `Material`.
+        let background: Material
+
+        /// An action performed when the item is tapped.
+        let onTap: () -> Void
+
+        /// The content of the view, i.e. `Image`, etc.
+        @ViewBuilder let content: () -> Content
+
+        init(
+            background: Material,
+            onTap: @escaping () -> Void,
+            _ content: @escaping () -> Content
+        ) {
+            self.background = background
+            self.onTap = onTap
+            self.content = content
+        }
 
         // MARK: - Body
 
         var body: some View {
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 8))
-                    .bold()
-                    .padding(8)
-                    .foregroundStyle(.white)
-                    .background(Material.ultraThick)
-                    .clipShape(Circle())
-                    .offset(x: -8, y: -8)
-                    .shadow(radius: 4)
+            Button(action: onTap) {
+                ZStack {
+                    content()
+                }
+                .bold()
+                .padding(8)
+                .background(background)
+                .clipShape(Circle())
+                .contentShape(Circle())
             }
         }
     }

@@ -37,6 +37,7 @@ public final class Tracer: TracerSDK {
     // MARK: - Private Properties
 
     private var configuration: TracerConfiguration
+    private let eventWriter: EventWriting
     private var displayLinkProvider: DisplayLinkProviding
     private var frameSampleProvider: any FrameSampleProviding
     private let memorySampleProvider: any MemorySampleProviding
@@ -60,8 +61,16 @@ public final class Tracer: TracerSDK {
         var configuration = TracerConfiguration(maximumSamples: TracerConstants.maximumSamples)
         configure(&configuration)
 
-        self.frameSampleProvider = FrameSampleProvider()
-        self.memorySampleProvider = MemorySampleProvider()
+        self.eventWriter = EventWriter()
+        
+        self.frameSampleProvider = FrameSampleProvider(
+            eventWriter: eventWriter
+        )
+
+        self.memorySampleProvider = MemorySampleProvider(
+            eventWriter: eventWriter
+        )
+
         self.displayLinkProvider = displayLinkProvider
         self.configuration = configuration
     }
@@ -99,5 +108,31 @@ public final class Tracer: TracerSDK {
         displayLinkProvider.stop()
         frameSampleProvider.stop()
         memorySampleProvider.stop()
+    }
+
+    public func startRecording() {
+        assert(
+            isObserving,
+            """
+            You must call `Tracer.shared.startObservation()` prior to
+            calling this method.
+            """
+        )
+
+        eventWriter.start()
+    }
+
+    public func stopRecording() {
+        eventWriter.stop()
+    }
+
+    public func event(
+        message: String,
+        metadata: [String: Any]
+    ) {
+        eventWriter.append(event: .user(
+            message: message,
+            metadata: metadata
+        ))
     }
 }

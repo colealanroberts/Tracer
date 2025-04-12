@@ -41,4 +41,14 @@ public protocol TracerSDK {
 
     /// Ends observation of the frame rate.
     func endObservation()
+
+    /// Begins recording events.
+    func startRecording()
+
+    /// Begins recording events.
+    /// - Note: This method performs an async disk write.
+    func stopRecording()
+
+    /// Records a user-generated event.
+    func event(message: String, metadata: [String: Any])
 }

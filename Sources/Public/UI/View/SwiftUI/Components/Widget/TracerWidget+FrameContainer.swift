@@ -14,21 +14,17 @@ extension TracerWidget {
         // MARK: - Public Properties
 
         let isCompact: Bool
+        let isRecording: Bool
         let isShowingOverflowMenu: Bool
         let style: Style
         let samples: [FrameRateSample]
+        let onRecord: () -> Void
         let onOverflowMenu: () -> Void
 
         // MARK: - Private Properties
 
         private var current: Double {
             samples.last?.value ?? 0
-        }
-
-        private var average: Int {
-            guard !samples.isEmpty else { return 0 }
-            let total = samples.reduce(0.0) { $0 + $1.value }
-            return Int(total) / samples.count
         }
 
         // MARK: - Body
@@ -66,32 +62,23 @@ extension TracerWidget {
                         .monospaced()
                         .foregroundColor(.white)
                 }
-
-                HStack {
-                    Text("AVG")
-                        .font(.caption2)
-                        .monospaced()
-                        .foregroundColor(.gray)
-
-                    Text("\(average)")
-                        .bold()
-                        .font(.caption2)
-                        .monospaced()
-                        .foregroundColor(.white)
-                }
-
+                
                 Spacer()
 
-                Button(action: onOverflowMenu) {
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 8))
-                        .bold()
-                        .padding(8)
-                        .foregroundStyle(.white.opacity(0.7))
-                        .background(Material.ultraThin)
-                        .clipShape(Circle())
-                        .rotationEffect(.degrees(isShowingOverflowMenu ? 180 : 0))
-                }
+                CircularButton(
+                    background: .ultraThin,
+                    onTap: onOverflowMenu, {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 8))
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                )
+                .rotationEffect(.degrees(isShowingOverflowMenu ? 180 : 0))
+
+                RecordButton(
+                    isRecording: isRecording,
+                    onTap: onRecord
+                )
             }
         }
     }

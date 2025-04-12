@@ -10,6 +10,18 @@ import Foundation
 
 final class FrameSampleProvider: SampleProvider<FrameRateSample> & FrameSampleProviding {
 
+    // MARK: - Privat Properties
+
+    private let eventWriter: EventWriting
+
+    // MARK: - Init
+
+    init(
+        eventWriter: EventWriting
+    ) {
+        self.eventWriter = eventWriter
+    }
+
     // MARK: - Override
 
     override func startSampling() {
@@ -25,6 +37,12 @@ final class FrameSampleProvider: SampleProvider<FrameRateSample> & FrameSamplePr
                 )
 
                 append(sample: sample)
+
+                if eventWriter.isRecording {
+                    eventWriter.append(
+                        event: .system(sample: sample)
+                    )
+                }
             }
     }
 }
