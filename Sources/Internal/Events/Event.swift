@@ -107,9 +107,9 @@ extension Event: Encodable {
         }
 
         // Always use `timestamp` from `sample`, if available, otherwise fallback to event timestamp
-        if let sample, let unboxed = sample.value as? any EncodableSample {
-            try container.encode(unboxed.timestamp, forKey: .timestamp)
-            try container.encode(unboxed.value, forKey: .sample)
+        if let sample = sample as? (any EncodableSample) {
+            try container.encode(sample.timestamp, forKey: .timestamp)
+            try container.encode(sample.value, forKey: .sample)
         } else {
             try container.encode(timestamp, forKey: .timestamp)
         }

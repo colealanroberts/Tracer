@@ -12,10 +12,6 @@ import Foundation
 /// Provides `Encodable` support through type-erasure.
 struct AnyEncodable: Encodable {
 
-    // MARK: - Public Properties
-
-    let value: Any
-
     // MARK: - Private Properties
 
     private let encoded: (Encoder) throws -> Void
@@ -25,7 +21,6 @@ struct AnyEncodable: Encodable {
     public init<T: Encodable>(
         _ value: T
     ) {
-        self.value = value
         self.encoded = value.encode(to:)
     }
 
