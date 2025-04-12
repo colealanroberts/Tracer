@@ -8,7 +8,7 @@
 import Foundation
 
 /// An event captured by the system.
-struct Event: Encodable {
+struct Event {
     /// An associated message, if any.
     let message: String?
 
@@ -19,19 +19,19 @@ struct Event: Encodable {
     let sample: AnyEncodable?
 
     /// Associated metadata, if any.
-    let metadata: [String: AnyEncodable]
+    let metadata: [String: AnyEncodable]?
 
     // MARK: - Utility
 
     public static func user(
         message: String,
-        metadata: [String: Any] = [:]
+        metadata: [String: Any]? = nil
     ) -> Self {
         .init(
             message: message,
             kind: .user,
             sample: nil,
-            metadata: metadata.asEncodable
+            metadata: metadata?.asEncodable ?? [:]
         )
     }
 
@@ -71,12 +71,46 @@ extension Event {
             /// A frame sample.
             case frame
         }
+
+        enum CodingKeys: CodingKey {
+            case category
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: Event.Kind.CodingKeys.self)
+            switch self {
+            case .system(let category):
+                try container.encode(category.rawValue, forKey: .category)
+            case .user:
+                try container.encode("user", forKey: .category)
+            }
+        }
+    }
+}
+
+// MARK: - Event+Encodable
+
+extension Event: Encodable {
+    enum CodingKeys: String, CodingKey {
+        case message, kind, sample, metadata
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encodeIfPresent(message, forKey: .message)
+        try container.encode(kind, forKey: .kind)
+        try container.encodeIfPresent(sample, forKey: .sample)
+
+        if let metadata = metadata, !metadata.isEmpty {
+            try container.encode(metadata, forKey: .metadata)
+        }
     }
 }
 
 // MARK: - AnyEncodable
 
-public struct AnyEncodable: Encodable {
+struct AnyEncodable: Encodable {
     private let encode: (Encoder) throws -> Void
 
     public init<T: Encodable>(

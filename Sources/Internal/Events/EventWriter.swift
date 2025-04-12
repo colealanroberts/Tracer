@@ -24,6 +24,13 @@ final class EventWriter: EventWriting {
         return encoder
     }()
 
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd 'at' h.mm.ss a"
+
+        return formatter
+    }()
+
     // MARK: - Public Methods
 
     func append(event: Event) {
@@ -47,18 +54,19 @@ final class EventWriter: EventWriting {
         Task {
             do {
                 let data = try encoder.encode(events)
-                try data.write(to: .documentsURL)
+                let fileURL = URL.documentsURL.appendingPathComponent(dateFormatter.string(from: .now))
+                try data.write(to: fileURL)
                 events.removeAll()
                 isRecording = false
             } catch {
-                //fatalError(error.localizedDescription)
+                fatalError(error.localizedDescription)
             }
         }
     }
 }
 
 // MARK: - URL+Util
-
+private
 extension URL {
     static var documentsURL: Self {
         FileManager.default.urls(
