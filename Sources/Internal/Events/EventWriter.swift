@@ -54,7 +54,7 @@ final class EventWriter: EventWriting {
         Task {
             do {
                 let data = try encoder.encode(events)
-                let fileURL = URL.documentsURL.appendingPathComponent(dateFormatter.string(from: .now))
+                let fileURL = URL.file(with: "Tracer-\(dateFormatter.string(from: .now))")
                 try data.write(to: fileURL)
                 events.removeAll()
                 isRecording = false
@@ -66,12 +66,9 @@ final class EventWriter: EventWriting {
 }
 
 // MARK: - URL+Util
-private
-extension URL {
-    static var documentsURL: Self {
-        FileManager.default.urls(
-            for: .documentDirectory,
-            in: .userDomainMask
-        ).first!
+
+private extension URL {
+    static func file(with value: String) -> Self {
+        URL.documentsURL.appendingPathComponent(value).appendingPathExtension("json")
     }
 }

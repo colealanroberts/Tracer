@@ -108,6 +108,19 @@ public struct TracerWidget: View {
             \.colorScheme,
              .dark
         )
+        .fullScreenCover(isPresented: $viewModel.isShowingDocumentExplorer) {
+            NavigationView {
+                DocumentExplorerView()
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") {
+                                viewModel.isShowingDocumentExplorer = false
+                            }
+                            .bold()
+                        }
+                    }
+            }
+        }
     }
 
     // MARK: - Private Methods
@@ -120,6 +133,15 @@ public struct TracerWidget: View {
                 onTap: {
                     withAnimation {
                         viewModel.isCompact.toggle()
+                    }
+                }
+            ),
+            .init(
+                symbolName: "text.word.spacing",
+                name: "View logs",
+                onTap: {
+                    withAnimation {
+                        viewModel.isShowingDocumentExplorer.toggle()
                     }
                 }
             ),
@@ -190,6 +212,7 @@ private extension TracerWidget {
         @Published var position: CGSize = .zero
         @Published var isCompact: Bool = false
         @Published var isCollectingSamples: Bool = true
+        @Published var isShowingDocumentExplorer: Bool = false
         @Published var isRecording: Bool = false
         @Published var isShowingOverflowMenu: Bool = false
         @Published var tick: Int = 0

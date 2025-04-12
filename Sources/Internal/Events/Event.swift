@@ -10,16 +10,16 @@ import Foundation
 /// An event captured by the system.
 struct Event {
     /// An associated message, if any.
-    let message: String?
+    private let message: String?
 
     /// The type of event, i.e. `system` or `user`
-    let kind: Kind
+    private let kind: Kind
 
     /// The associated sample.
-    let sample: AnyEncodable?
+    private let sample: AnyEncodable?
 
     /// Associated metadata, if any.
-    let metadata: [String: AnyEncodable]?
+    private let metadata: [String: AnyEncodable]?
 
     // MARK: - Utility
 
@@ -41,7 +41,7 @@ struct Event {
         let category: Event.Kind.Category = switch sample {
         case is FrameRateSample: .frame
         case is MemorySample: .memory
-        default: preconditionFailure("Unknown sample type!")
+        default: preconditionFailure("Unknown sample type: \(type(of: sample))")
         }
 
         return .init(
@@ -72,17 +72,14 @@ extension Event {
             case frame
         }
 
-        enum CodingKeys: CodingKey {
-            case category
-        }
-
         func encode(to encoder: any Encoder) throws {
-            var container = encoder.container(keyedBy: Event.Kind.CodingKeys.self)
+            var container = encoder.singleValueContainer()
+
             switch self {
             case .system(let category):
-                try container.encode(category.rawValue, forKey: .category)
+                try container.encode(category.rawValue)
             case .user:
-                try container.encode("user", forKey: .category)
+                try container.encode("user")
             }
         }
     }
@@ -97,20 +94,19 @@ extension Event: Encodable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
         try container.encodeIfPresent(message, forKey: .message)
         try container.encode(kind, forKey: .kind)
         try container.encodeIfPresent(sample, forKey: .sample)
 
-        if let metadata = metadata, !metadata.isEmpty {
-            try container.encode(metadata, forKey: .metadata)
+        if let metadata, !metadata.isEmpty {
+            try container.encodeIfPresent(metadata, forKey: .metadata)
         }
     }
 }
 
 // MARK: - AnyEncodable
 
-struct AnyEncodable: Encodable {
+private struct AnyEncodable: Encodable {
     private let encode: (Encoder) throws -> Void
 
     public init<T: Encodable>(
