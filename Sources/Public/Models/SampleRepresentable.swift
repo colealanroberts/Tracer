@@ -13,6 +13,9 @@ import Foundation
 public protocol SampleRepresentable {
     associatedtype Value: Equatable & Encodable
 
+    /// A unique identifier.
+    var uuid: UUID { get }
+
     /// The timestamp when the sample was recorded.
     /// - Note: This is particularly useful when paired with the SwiftUI Charts library and `XMark` graphs.
     var timestamp: Date { get }

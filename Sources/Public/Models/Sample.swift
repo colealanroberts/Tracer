@@ -9,6 +9,7 @@ import Foundation
 
 /// A sample represents a unit that's able to be examined.
 public struct Sample<Value: Equatable & Encodable>: EncodableSample {
+    public let uuid = UUID()
     public let timestamp: Date
     public let value: Value
 }
@@ -25,6 +26,6 @@ extension Sample: Hashable {
 
 extension Sample: Equatable {
     public static func ==(lhs: Self, rhs: Self) -> Bool {
-        lhs.timestamp == rhs.timestamp
+        lhs.uuid == rhs.uuid
     }
 }

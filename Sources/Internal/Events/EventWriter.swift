@@ -34,7 +34,8 @@ final class EventWriter: EventWriting {
     // MARK: - Public Methods
 
     func append(event: Event) {
-        assert(isRecording, "You must call `start()` prior to appending events.")
+        // Discard all events when not recording.
+        guard isRecording else { return }
         events.append(event)
     }
 

@@ -9,6 +9,12 @@ import Foundation
 
 /// An event captured by the system.
 struct Event {
+    
+    // MARK: - Private Properties
+
+    /// A unique id.
+    private let uuid = UUID()
+
     /// An associated message, if any.
     private let message: String?
 
@@ -94,11 +100,12 @@ extension Event {
 
 extension Event: Encodable {
     enum CodingKeys: String, CodingKey {
-        case message, kind, sample, timestamp, metadata
+        case uuid, message, kind, sample, timestamp, metadata
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(uuid, forKey: .uuid)
         try container.encodeIfPresent(message, forKey: .message)
         try container.encode(kind, forKey: .kind)
 
