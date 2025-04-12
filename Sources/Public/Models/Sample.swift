@@ -8,13 +8,8 @@
 import Foundation
 
 /// A sample represents a unit that's able to be examined.
-public struct Sample<Value: Equatable & Encodable>: Encodable {
-
-    /// The timestamp when the sample was recorded.
-    /// - Note: This is particularly useful when paired with the SwiftUI Charts library and `XMark` graphs.
+public struct Sample<Value: Equatable & Encodable>: EncodableSample {
     public let timestamp: Date
-
-    /// The value of the sample.
     public let value: Value
 }
 

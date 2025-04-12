@@ -16,7 +16,10 @@ struct Event {
     private let kind: Kind
 
     /// The associated sample.
-    private let sample: AnyEncodable?
+    private let sample: (any EncodableSample)?
+
+    /// The timestamp of the event.
+    private let timestamp: Date
 
     /// Associated metadata, if any.
     private let metadata: [String: AnyEncodable]?
@@ -31,6 +34,7 @@ struct Event {
             message: message,
             kind: .user,
             sample: nil,
+            timestamp: .now,
             metadata: metadata?.asEncodable ?? [:]
         )
     }
@@ -47,7 +51,8 @@ struct Event {
         return .init(
             message: nil,
             kind: .system(category),
-            sample: .init(sample),
+            sample: sample,
+            timestamp: sample.timestamp,
             metadata: [:]
         )
     }
@@ -89,46 +94,24 @@ extension Event {
 
 extension Event: Encodable {
     enum CodingKeys: String, CodingKey {
-        case message, kind, sample, metadata
+        case message, kind, sample, timestamp, metadata
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(message, forKey: .message)
         try container.encode(kind, forKey: .kind)
-        try container.encodeIfPresent(sample, forKey: .sample)
 
         if let metadata, !metadata.isEmpty {
             try container.encodeIfPresent(metadata, forKey: .metadata)
         }
-    }
-}
 
-// MARK: - AnyEncodable
-
-private struct AnyEncodable: Encodable {
-    private let encode: (Encoder) throws -> Void
-
-    public init<T: Encodable>(
-        _ value: T
-    ) {
-        self.encode = value.encode(to:)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        try encode(encoder)
-    }
-}
-
-// MARK: - Dictionary+Util
-
-private extension [String: Any] {
-    var asEncodable: [String: AnyEncodable] {
-        compactMapValues { value in
-            guard let value = value as? Encodable else {
-                return AnyEncodable(String(describing: value))
-            }
-            return AnyEncodable(value)
+        // Always use `timestamp` from `sample`, if available, otherwise fallback to event timestamp
+        if let sample, let unboxed = sample.value as? any EncodableSample {
+            try container.encode(unboxed.timestamp, forKey: .timestamp)
+            try container.encode(unboxed.value, forKey: .sample)
+        } else {
+            try container.encode(timestamp, forKey: .timestamp)
         }
     }
 }

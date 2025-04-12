@@ -128,7 +128,7 @@ public final class Tracer: TracerSDK {
 
     public func event(
         message: String,
-        metadata: [String: Any]
+        metadata: [String: Any]?
     ) {
         eventWriter.append(event: .user(
             message: message,

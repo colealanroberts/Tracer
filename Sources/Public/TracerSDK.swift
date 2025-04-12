@@ -50,5 +50,14 @@ public protocol TracerSDK {
     func stopRecording()
 
     /// Records a user-generated event.
-    func event(message: String, metadata: [String: Any])
+    func event(message: String, metadata: [String: Any]?)
+}
+
+// MARK: - TracerSDK+Defaults
+
+public extension TracerSDK {
+    /// Records a user-generated event.
+    func event(message: String) {
+        event(message: message, metadata: nil)
+    }
 }
