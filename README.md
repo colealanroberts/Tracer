@@ -8,16 +8,59 @@
 </p>
 
 
-# Introduction
+# Tracer
 
-# Installation
-## Foo
+Tracer tracks frame rate and memory usage in real time, making it easy to capture and analyze performance logs directly on device.
 
-## Swift Package Manager
+## Requirements
 
-# Usage
+- iOS 16.0+
+
+## Setup
+### Installation
+
+**Swift Package Manager**
+
+To install OpenAlpha using Swift Package Manager, add the following dependency to your Package.swift file:
+
 ```swift
-class Tracer {}
+.Package(url: "https://github.com/colealanroberts/Tracer.git")
 ```
-# License
+
+## Usage
+
+**Getting Started**
+
+To start collecting memory and frame samples, call `Tracer.shared.startObservation()`. 
+
+```swift
+import Tracer
+
+@main struct MyApp: App {
+    ...
+    init() {
+        Tracer.shared.startObservation()
+    }
+}
+```
+
+**Viewing Sample Data**
+
+Tracer provides several mechanisms for viewing sample data. The simplest is `TracerSamplingViewModifier`, which can be applied to any SwiftUI view using `.tracerWidgetOverlay(isPresented:)`.
+
+```swift
+MyView().tracerWidgetOverlay(isPresented: $isPresentingTracer)
+```
+
+However, for more granular control, use `.tracerSamplingOverlay(isPresented:alignment:builder:)`, which allows full customization of the UI.
+
+```swift
+MyView().tracerSamplingOverlay(isPresented: $isPresentingTracer) { buffer in
+    /// See `SampleBuffer.swift` for available properties.
+}
+```
+
+
+
+## License
 This library is released under the MIT license. See [LICENSE](LICENSE) for details.
