@@ -46,15 +46,21 @@ import Tracer
 
 **Viewing Sample Data**
 
-Tracer provides several mechanisms for viewing sample data. The simplest is `TracerSamplingViewModifier`, which can be applied to any SwiftUI view using `.tracerWidgetOverlay(isPresented:)`. For more granular control, use `.tracerSamplingOverlay(isPresented:alignment:builder:)`, which allows full customization of the UI.
+Tracer provides several mechanisms for viewing sample data. The simplest is `TracerSamplingViewModifier`, which can be applied to any SwiftUI view using `.tracerWidgetOverlay(isPresented:)`.
 
 ```swift
-
-@State var isPresentingTracer = false
-
-...
 MyView().tracerWidgetOverlay(isPresented: $isPresentingTracer)
 ```
+
+However, for more granular control, use `.tracerSamplingOverlay(isPresented:alignment:builder:)`, which allows full customization of the UI.
+
+```swift
+MyView().tracerSamplingOverlay(isPresented: $isPresentingTracer) { buffer in
+    /// See `SampleBuffer.swift` for available properties.
+}
+```
+
+
 
 ## License
 This library is released under the MIT license. See [LICENSE](LICENSE) for details.
