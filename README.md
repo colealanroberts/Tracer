@@ -42,6 +42,7 @@ import Tracer
         Tracer.shared.startObservation()
     }
 }
+```
 
 **Viewing Sample Data**
 
