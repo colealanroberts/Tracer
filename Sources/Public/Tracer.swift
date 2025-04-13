@@ -16,23 +16,25 @@ public final class Tracer: TracerSDK {
 
     // MARK: - Public Properties
 
-    public var frameRatePublisher: ValuePublisher<Double> {
-        displayLinkProvider.frameRatePublisher
-    }
-
-    public var frameRateSamplePublisher: ValuePublisher<[FrameRateSample]> {
-        frameSampleProvider.samplePublisher
-    }
-
-    public var memorySamplePublisher: ValuePublisher<[MemorySample]> {
-        memorySampleProvider.samplePublisher
-    }
-
     public var maximumFrameRate: Int {
         displayLinkProvider.maximumFrameRate
     }
 
     public private(set) var isObserving: Bool = false
+
+    // MARK: - Internal Properties
+
+    var frameRatePublisher: ValuePublisher<Double> {
+        displayLinkProvider.frameRatePublisher
+    }
+
+    var frameRateSamplePublisher: ValuePublisher<[FrameRateSample]> {
+        frameSampleProvider.samplePublisher
+    }
+
+    var memorySamplePublisher: ValuePublisher<[MemorySample]> {
+        memorySampleProvider.samplePublisher
+    }
 
     // MARK: - Private Properties
 
@@ -84,16 +86,6 @@ public final class Tracer: TracerSDK {
         frameSampleProvider.maximumSamples = configuration.maximumSamples
     }
 
-    public func resetSampling() {
-        frameSampleProvider.reset()
-        memorySampleProvider.reset()
-    }
-
-    public func toggleSampling() {
-        frameSampleProvider.toggle()
-        memorySampleProvider.toggle()
-    }
-
     public func startObservation() {
         isObserving = true
 
@@ -110,7 +102,29 @@ public final class Tracer: TracerSDK {
         memorySampleProvider.stop()
     }
 
-    public func startRecording() {
+    public func event(
+        message: String,
+        metadata: [String: Any]?
+    ) {
+        eventWriter.append(event: .user(
+            message: message,
+            metadata: metadata
+        ))
+    }
+
+    // MARK: - Internal Methods
+
+    func resetSampling() {
+        frameSampleProvider.reset()
+        memorySampleProvider.reset()
+    }
+
+    func toggleSampling() {
+        frameSampleProvider.toggle()
+        memorySampleProvider.toggle()
+    }
+
+    func startRecording() {
         assert(
             isObserving,
             """
@@ -122,17 +136,7 @@ public final class Tracer: TracerSDK {
         eventWriter.start()
     }
 
-    public func stopRecording() {
+    func stopRecording() {
         eventWriter.stop()
-    }
-
-    public func event(
-        message: String,
-        metadata: [String: Any]?
-    ) {
-        eventWriter.append(event: .user(
-            message: message,
-            metadata: metadata
-        ))
     }
 }

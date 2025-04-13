@@ -13,13 +13,6 @@ import Foundation
 /// Conforming types are expected to be `Observable` and provide real-time frame rate data,
 /// along with lifecycle hooks to begin and end frame monitoring.
 public protocol TracerSDK {
-    var frameRatePublisher: ValuePublisher<Double> { get }
-
-    /// An array of `FrameRateSample` objects.
-    var frameRateSamplePublisher: ValuePublisher<[FrameRateSample]> { get }
-
-    /// An array of `MemorySample` objects.
-    var memorySamplePublisher: ValuePublisher<[MemorySample]> { get }
 
     /// Whether the frame rate is being observed.
     var isObserving: Bool { get }
@@ -30,24 +23,11 @@ public protocol TracerSDK {
     /// Enables configuration of the FrameSDK.
     func configure(_ configure: (inout TracerConfiguration) -> Void)
 
-    /// Resets all sampling.
-    func resetSampling()
-
-    /// Toggles sample collection.
-    func toggleSampling()
-    
     /// Begins observing the frame rate.
     func startObservation()
 
     /// Ends observation of the frame rate.
     func endObservation()
-
-    /// Begins recording events.
-    func startRecording()
-
-    /// Begins recording events.
-    /// - Note: This method performs an async disk write.
-    func stopRecording()
 
     /// Records a user-generated event.
     func event(message: String, metadata: [String: Any]?)
