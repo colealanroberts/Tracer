@@ -56,6 +56,5 @@ Tracer provides several mechanisms for viewing sample data. The simplest is `Tra
 MyView().tracerWidgetOverlay(isPresented: $isPresentingTracer)
 ```
 
-```
 ## License
 This library is released under the MIT license. See [LICENSE](LICENSE) for details.
