@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SQLite
 
 public final class Tracer: TracerSDK {
 
@@ -43,6 +44,7 @@ public final class Tracer: TracerSDK {
     private var displayLinkProvider: DisplayLinkProviding
     private var frameSampleProvider: any FrameSampleProviding
     private let memorySampleProvider: any MemorySampleProviding
+    private let persistenceProvider: PersistenceProvider
 
     // MARK: - Init
 
@@ -53,6 +55,9 @@ public final class Tracer: TracerSDK {
     public init(
         _ configure: (inout TracerConfiguration) -> Void = { _ in }
     ) {
+        var configuration = TracerConfiguration(maximumSamples: TracerConstants.maximumSamples)
+        configure(&configuration)
+
         let displayLinkProvider: DisplayLinkProviding
         #if os(macOS)
         displayLinkProvider = macOSDisplayLinkProvider()
@@ -60,10 +65,22 @@ public final class Tracer: TracerSDK {
         displayLinkProvider = iOSDisplayLinkProvider()
         #endif
 
-        var configuration = TracerConfiguration(maximumSamples: TracerConstants.maximumSamples)
-        configure(&configuration)
+        let persistenceProvider = try! PersistenceProvider(
+            location: .inMemory
+        )
 
-        self.eventWriter = EventWriter()
+        try! persistenceProvider.createTable(for: EventRecord.self) { type, table in
+            table.column(type.uuid, primaryKey: true)
+            table.column(type.dateCreated)
+            table.column(type.name)
+            table.column(type.path)
+        }
+
+        self.persistenceProvider = persistenceProvider
+
+        self.eventWriter = EventWriter(
+            persistenceProvider: persistenceProvider
+        )
         
         self.frameSampleProvider = FrameSampleProvider(
             eventWriter: eventWriter
@@ -73,8 +90,8 @@ public final class Tracer: TracerSDK {
             eventWriter: eventWriter
         )
 
-        self.displayLinkProvider = displayLinkProvider
         self.configuration = configuration
+        self.displayLinkProvider = displayLinkProvider
     }
 
     // MARK: - Public Methods
@@ -138,5 +155,9 @@ public final class Tracer: TracerSDK {
 
     func stopRecording() {
         eventWriter.stop()
+    }
+
+    func fetchEventRecords() -> [EventRecord] {
+        try! persistenceProvider.fetch(EventRecord.self)
     }
 }

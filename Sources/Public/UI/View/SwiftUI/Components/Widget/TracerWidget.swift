@@ -67,7 +67,7 @@ public struct TracerWidget: View {
             RoundedRectangle(cornerRadius: 8.0)
         )
         .frame(
-            width: 192
+            width: 208
         )
         .animation(
             .snappy,
@@ -108,19 +108,31 @@ public struct TracerWidget: View {
             \.colorScheme,
              .dark
         )
-        .sheet(
-            isPresented: $viewModel.isShowingDocumentExplorer
-        ) {
+        .sheet(item: $viewModel.sheetType) { type in
             NavigationView {
-                DocumentExplorerView()
-                    .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button("Done") {
-                                viewModel.isShowingDocumentExplorer = false
+                Group {
+                    switch type {
+                    case .eventRecords(let records):
+                        List(records, id: \.uuid) { record in
+                            Text(record.name).onTapGesture {
+                                viewModel.sheetType = .eventViewer(URL(string: record.path)!)
                             }
-                            .bold()
+                        }
+                    case .eventViewer(let url):
+                        if url.startAccessingSecurityScopedResource() {
+                            DocumentExplorerView(
+                                url: url
+                            )
                         }
                     }
+                }
+                .toolbar {
+                    ToolbarItem {
+                        Button("Done") {
+                            viewModel.sheetType = nil
+                        }
+                    }
+                }
             }
         }
     }
@@ -143,7 +155,8 @@ public struct TracerWidget: View {
                 name: "View logs",
                 onTap: {
                     withAnimation {
-                        viewModel.isShowingDocumentExplorer.toggle()
+                        let records = Tracer.shared.fetchEventRecords()
+                        viewModel.sheetType = .eventRecords(records)
                     }
                 }
             ),
@@ -214,12 +227,27 @@ private extension TracerWidget {
         @Published var position: CGSize = .zero
         @Published var isCompact: Bool = false
         @Published var isCollectingSamples: Bool = true
-        @Published var isShowingDocumentExplorer: Bool = false
         @Published var isRecording: Bool = false
         @Published var isShowingOverflowMenu: Bool = false
         @Published var tick: Int = 0
+        @Published var sheetType: SheetType?
 
-        // MARK: - Private Methods
+        enum SheetType: Identifiable {
+            var id: String {
+                switch self {
+                case .eventRecords: "records"
+                case .eventViewer: "viewer"
+                }
+            }
+
+            /// TODO:
+            case eventRecords([EventRecord])
+
+            /// TODO:
+            case eventViewer(URL)
+        }
+
+        // MARK: - Private Properties
 
         private var timer: AnyCancellable?
 

@@ -21,12 +21,12 @@ struct SettingsMenu: View {
                 VStack {
                     HStack {
                         Image(systemName: item.symbolName)
-                            .font(.system(size: 12))
+                            .font(.system(size: 13))
                             .frame(width: 12, height: 12)
                             .foregroundStyle(.secondary)
 
                         Text(item.name)
-                            .font(.caption)
+                            .font(.system(size: 13))
                             .foregroundStyle(.secondary)
 
                         Spacer()

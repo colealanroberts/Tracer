@@ -11,9 +11,17 @@ let package = Package(
         .library(
             name: "Tracer",
             targets: ["Tracer"]
-        ),
+        )
+    ],
+    dependencies: [
+        .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
     ],
     targets: [
-        .target(name: "Tracer")
+        .target(
+            name: "Tracer",
+            dependencies: [
+                .product(name: "SQLite", package: "SQLite.swift")
+            ]
+        )
     ]
 )

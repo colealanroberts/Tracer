@@ -15,8 +15,6 @@ final class EventWriter: EventWriting {
 
     // MARK: - Private Properties
 
-    private var events = [Event]()
-
     private lazy var encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -31,10 +29,21 @@ final class EventWriter: EventWriting {
         return formatter
     }()
 
+    private var events = [Event]()
+    private let persistenceProvider: PersistenceProvider
+
+    // MARK: - Init
+
+    init(
+        persistenceProvider: PersistenceProvider
+    ) {
+        self.persistenceProvider = persistenceProvider
+    }
+
     // MARK: - Public Methods
 
     func append(event: Event) {
-        // Discard all events when not recording.
+        // Ignore all events when not recording.
         guard isRecording else { return }
         events.append(event)
     }
@@ -57,10 +66,18 @@ final class EventWriter: EventWriting {
                 let data = try encoder.encode(events)
                 let fileURL = URL.file(with: "Tracer-\(dateFormatter.string(from: .now))")
                 try data.write(to: fileURL)
+
+                let eventRecord = EventRecord(
+                    name: fileURL.lastPathComponent,
+                    path: fileURL.absoluteString
+                )
+
+                try persistenceProvider.insert([eventRecord])
+
                 events.removeAll()
                 isRecording = false
             } catch {
-                fatalError(error.localizedDescription)
+                assertionFailure(error.localizedDescription)
             }
         }
     }
