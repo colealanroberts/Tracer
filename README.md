@@ -24,7 +24,7 @@ Tracer tracks frame rate and memory usage in real time, making it easy to captur
 To install OpenAlpha using Swift Package Manager, add the following dependency to your Package.swift file:
 
 ```swift
-.Package(url: "https://github.com/colealanroberts/Tracer.git")
+.package(url: "https://github.com/colealanroberts/Tracer.git")
 ```
 
 ## Usage
